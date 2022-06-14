@@ -1,0 +1,38 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\de\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add express socket.io
+
+PATH: 
+  C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\de\bin;C:\Program Files (x86)\VMware\VMware Player\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\Git\cmd;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Program Files\Java\jdk-16.0.1\bin;C:\Users\de\AppData\Local\Android\Sdk;C:\Program Files\Microsoft SQL Server\130\Tools\Binn;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn;C:\Program Files\dotnet;C:\Program Files\nodejs;C:\Users\de\AppData\Local\Programs\Python\Python38\Scripts;C:\Users\de\AppData\Local\Programs\Python\Python38;C:\Users\de\AppData\Local\Microsoft\WindowsApps;C:\Users\de\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\de\AppData\Roaming\Composer\vendor\bin;C:\Program Files\Java\jdk-16.0.1\bin;C:\Program Files\heroku\bin;C:\Program Files (x86)\GitHub CLI;C:\Users\de\.dotnet\tools;C:\Users\de\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Users\de\AppData\Roaming\npm;D:\flutter\bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  16.13.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:71:26)
+
+npm manifest: 
+  {
+    "name": "mern-realtime-whiteboard-sharing-app-backend",
+    "version": "1.0.0",
+    "description": "this is the backend for mern realtime white board sharing app",
+    "main": "sever.js",
+    "scripts": {
+      "start": "node server.js",
+      "dev": "nodemon server.js"
+    },
+    "author": "Raman Sharma",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
