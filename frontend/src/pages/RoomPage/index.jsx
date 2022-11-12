@@ -177,6 +177,18 @@ const RoomPage = ({ user, socket, users }) => {
           </div>
         </div>
       )}
+      
+      <div className="col-md-2">
+            <button id="start" className="btn btn-success" onClick={handleRecording} >
+              Start Record
+            </button>
+          </div>
+
+          <div className="col-md-2">
+            <button id="stop" className="btn btn-warning" onClick={handleRecording}>
+              Stop
+            </button>
+          </div>
 
       <div className="col-md-10 mx-auto mt-4 canvas-box">
         <WhiteBoard
