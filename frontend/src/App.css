@@ -1,0 +1,20 @@
+.video-grid {
+    width: 250px;
+    background-color: black;
+    padding: 20px;
+}
+
+.video-grid::before {
+    content: "Video Grid";
+    padding-top: 56.25%;
+    position: absolute;
+    color: #fff;
+    right: 100%;
+    background-color: #000;
+}
+
+
+.video-grid video {
+    width: 100%;
+    object-fit: cover;
+}
