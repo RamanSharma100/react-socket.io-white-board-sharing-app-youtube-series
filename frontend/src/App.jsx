@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import io from "socket.io-client";
-import Peer from "peerjs";
 
 import "./App.css";
 
@@ -19,66 +18,52 @@ const connectionOptions = {
 
 const socket = io(server, connectionOptions);
 
-const myPeer = new Peer(undefined, {
-  host: "localhost:5000",
-  port: "3001",
-});
-
 const App = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [peers, setPeers] = useState({});
-  const [openVideo, setOpenVideo] = useState(false);
+  const [myPeer, setMyPeer] = useState(null);
+  const [openVideo, setOpenVideo] = useState(true);
 
   const videoGrid = useRef(null);
 
-  const addVideoStream = (video, stream) => {
+  const addVideoStream = (div, video, stream) => {
     video.srcObject = stream;
     video.addEventListener("loadedmetadata", () => {
       video.play();
     });
-    videoGrid.current.append(video);
+    div.append(video);
+    videoGrid.current.append(div);
   };
 
-  const connectToNewUser = (userId, stream) => {
+  const connectToNewUser = (userId, name, stream) => {
+    console.log(myPeer, stream);
     const call = myPeer.call(userId, stream);
+    console.log("call", call);
+    const div = document.createElement("div");
+    div.id = userId;
     const video = document.createElement("video");
-    video.title = users.find((user) => user.id === userId).name;
+    const p = document.createElement("p");
+    console.log(users);
+    p.innerText = name;
+    div.append(p);
     call.on("stream", (userVideoStream) => {
-      addVideoStream(video, userVideoStream);
+      addVideoStream(div, video, userVideoStream);
     });
     call.on("close", () => {
       video.remove();
     });
 
-    peers[socket.id] = call;
+    setPeers((prevPeers) => {
+      return { ...prevPeers, [userId]: call };
+    });
   };
 
   useEffect(() => {
-    if (user) {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          audio: true,
-        })
-        .then((stream) => {
-          const myVideo = document.createElement("video");
-          addVideoStream(myVideo, stream);
-
-          myPeer.on("call", (call) => {
-            call.answer(stream);
-            const video = document.createElement("video");
-            call.on("stream", (userVideoStream) => {
-              addVideoStream(video, userVideoStream);
-            });
-          });
-        });
-    }
     socket.on("userIsJoined", (data) => {
       if (data.success) {
         console.log("userJoined");
         setUsers(data.users);
-        connectToNewUser(socket.id, stream);
       } else {
         console.log("userJoined error");
       }
@@ -88,17 +73,12 @@ const App = () => {
       setUsers(data);
     });
 
-    socket.on("userJoinedMessageBroadcasted", (data) => {
-      console.log(`${data} joined the room`);
-      toast.info(`${data} joined the room`);
-    });
-
     socket.on("userLeftMessageBroadcasted", (data) => {
-      console.log(`${data} left the room`);
-      toast.info(`${data} left the room`);
-      if (peers[socket.id]) peers[socket.id].close();
+      console.log(`${data.name} ${data.userId} left the room`);
+      toast.info(`${data.name} left the room`);
+      if (peers[data.userId]) peers[data.userId].close();
     });
-  }, [users]);
+  }, []);
 
   const uuid = () => {
     let S4 = () => {
@@ -126,7 +106,14 @@ const App = () => {
       <Routes>
         <Route
           path="/"
-          element={<Forms uuid={uuid} socket={socket} setUser={setUser} />}
+          element={
+            <Forms
+              uuid={uuid}
+              setMyPeer={setMyPeer}
+              socket={socket}
+              setUser={setUser}
+            />
+          }
         />
         <Route
           path="/:roomId"
@@ -148,16 +135,32 @@ const App = () => {
               >
                 Open Video
               </button>
-              {openVideo && (
-                <div
-                  className="video-grid h-100 position-fixed top-0 end-0"
-                  style={{
-                    zIndex: 1000,
-                  }}
-                  ref={videoGrid}
-                ></div>
-              )}
-              <RoomPage user={user} socket={socket} users={users} />
+              <div
+                className="video-grid h-100 position-fixed top-0 "
+                style={{
+                  zIndex: 1000,
+                  right: openVideo ? "0" : "-100%",
+                }}
+                ref={videoGrid}
+              >
+                <button
+                  className="btn btn-light  "
+                  onClick={() => setOpenVideo(false)}
+                >
+                  Close
+                </button>
+              </div>
+              <RoomPage
+                connectToNewUser={connectToNewUser}
+                addVideoStream={addVideoStream}
+                videoGrid={videoGrid}
+                user={user}
+                myPeer={myPeer}
+                setPeers={setPeers}
+                socket={socket}
+                users={users}
+                setUsers={setUsers}
+              />
             </>
           }
         />

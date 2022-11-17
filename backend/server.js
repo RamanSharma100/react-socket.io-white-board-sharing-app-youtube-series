@@ -6,7 +6,18 @@ const { Server } = require("socket.io");
 
 const { addUser, getUser, removeUser } = require("./utils/users");
 
+// const { PeerServer } = require("peer");
+
+// const peerServer = PeerServer({
+//   host:"/".
+//   port: 5001,
+//   path: "/",
+// });
+
+// app.use(peerServer);
+
 const io = new Server(server);
+// server.on("upgrade", (request, socket, head) => {});
 
 // routes
 app.get("/", (req, res) => {
@@ -31,11 +42,16 @@ io.on("connection", (socket) => {
       socketId: socket.id,
     });
     socket.emit("userIsJoined", { success: true, users });
-    socket.broadcast.to(roomId).emit("userJoinedMessageBroadcasted", name);
+    console.log({ name, userId });
     socket.broadcast.to(roomId).emit("allUsers", users);
-    socket.broadcast.to(roomId).emit("whiteBoardDataResponse", {
-      imgURL: imgURLGlobal,
-    });
+    setTimeout(() => {
+      socket.broadcast
+        .to(roomId)
+        .emit("userJoinedMessageBroadcasted", { name, userId, users });
+      socket.broadcast.to(roomId).emit("whiteBoardDataResponse", {
+        imgURL: imgURLGlobal,
+      });
+    }, 1000);
   });
 
   socket.on("whiteboardData", (data) => {
@@ -59,9 +75,10 @@ io.on("connection", (socket) => {
     const user = getUser(socket.id);
     if (user) {
       removeUser(socket.id);
-      socket.broadcast
-        .to(roomIdGlobal)
-        .emit("userLeftMessageBroadcasted", user.name);
+      socket.broadcast.to(roomIdGlobal).emit("userLeftMessageBroadcasted", {
+        name: user.name,
+        userId: user.userId,
+      });
     }
   });
 });
